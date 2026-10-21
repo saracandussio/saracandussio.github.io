@@ -15,7 +15,9 @@
 
   {{ with $resource }}
   {{ $image := "" }}
-  {{if $fill_image}}
+  {{ if eq .MediaType.SubType "gif" }}
+    {{ $image = . }}
+  {{ else if $fill_image }}
     {{ $image = .Fill (printf "960x540 %s" $anchor) }}
   {{else}}
     {{ $image = .Fit (printf "960x540 %s" $anchor) }}
