@@ -6,7 +6,7 @@ date: "2026-03-05T00:00:00Z"
 doi: "https://doi.org/10.48550/arXiv.2603.05198"
 publishDate: "2026-03-05T00:00:00Z"
 publication_types: ["paper-conference"]
-publication: "NeSy 2026 (oral)"
+publication: "NeSy 2026"
 publication_short: "NeSy 2026"
 abstract: >
   We introduce a framework for learning continuous neural representations of formal specifications by distilling the geometry of their semantics into a latent space. Using a teacher-student setup, we distill a symbolic robustness kernel into a Transformer encoder, supervised by a continuous kernel-weighted geometric alignment objective that penalizes errors proportionally to their semantic discrepancies.
