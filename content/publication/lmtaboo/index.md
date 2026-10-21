@@ -47,7 +47,7 @@ url_pdf: https://arxiv.org/abs/2607.00601
 url_code: https://github.com/DanielSc4/LMtaboo
 
 image:
-  caption: "An example Taboo card from the paper: describe the word on top without using any of the five words below."
+  caption: "A Taboo card from our CLiC-it oral: describe Panella without saying Cecina, Frittella, Ceci, Palermo or Sicilia."
   focal_point: Center
   preview_only: false
 ---
