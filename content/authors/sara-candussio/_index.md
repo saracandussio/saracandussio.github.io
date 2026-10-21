@@ -8,7 +8,7 @@ last_name: Candussio
 superuser: true
 highlight_name: true
 
-role: PhD Student (2nd year)
+role: PhD Student (3rd year)
 
 organizations:
   - name: AI Lab, University of Trieste
@@ -31,8 +31,8 @@ profiles:
 
 interests:
   - Reasoning in LLMs
-  - Reinforcement Learning approaches for NLP
-  - Neuro-Symbolic Integration
+  - Interpretability for LLMs
+  - AI Safety
   - Multi-Agent LLMs
   - Generalization in LLMs
 
@@ -42,7 +42,7 @@ education:
     date_start: 2024-11-01
     date_end: 2027-10-31
     summary: |
-      Currently working on reasoning with LLMs, visiting PhD at the CLCG of the University of Groningen. 
+      Currently working on reasoning with LLMs, previously visiting PhD at the CLCG of the University of Groningen. 
 
   - area: MSc in Data Science and Scientific Computing (LM-44)
     institution: University of Trieste
