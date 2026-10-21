@@ -25,6 +25,17 @@ sections:
           size: cover
           position: center
           parallax: false
+  - block: collection
+    id: news
+    content:
+      title: News
+      count: 0
+      filters:
+        folders:
+          - news
+    design:
+      view: timeline
+      columns: 1
   - block: markdown
     content:
       title: '🧠 My Research'
@@ -38,33 +49,6 @@ sections:
     design:
       columns: '1'
   - block: collection
-    id: talks
-    content:
-      title: Talks
-      page_type: event
-    design:
-      view: article-grid
-      columns: 2
-  - block: collection
-    id: news
-    content:
-      title: News
-      count: 0
-      filters:
-        folders:
-          - news
-    design:
-      view: timeline
-      columns: 1
-  - block: collection
-    id: teaching
-    content:
-          title: Teaching
-          page_type: teaching
-          filters:
-            folders:
-              - teaching
-  - block: collection
     id: papers
     content:
       title: Featured Publications
@@ -77,6 +61,22 @@ sections:
       view: article-grid
       columns: 2
       fill_image: false
+  - block: collection
+    id: talks
+    content:
+      title: Talks
+      page_type: event
+    design:
+      view: article-grid
+      columns: 2
+  - block: collection
+    id: teaching
+    content:
+          title: Teaching
+          page_type: teaching
+          filters:
+            folders:
+              - teaching
   - block: collection
     content:
       title: Recent Publications
