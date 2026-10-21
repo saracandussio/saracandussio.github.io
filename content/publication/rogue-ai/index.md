@@ -2,6 +2,10 @@
 title: "RogueAI: A Reverse Turing Test for Detecting Licensed AI Deception in Dialogue"
 authors:
   - sara-candussio
+  - Emanuele Ballarin
+  - Lorenzo Bonin
+  - Sandro Junior Della Rovere
+  - Luca Bortolussi
 date: "2026-06-01T00:00:00Z"
 doi: "https://doi.org/10.48550/arXiv.2606.13310"
 publishDate: "2026-06-01T00:00:00Z"

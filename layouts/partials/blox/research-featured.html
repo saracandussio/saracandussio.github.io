@@ -55,12 +55,12 @@
       {{ $link := .Params.external_link | default .Params.url_pdf | default .RelPermalink }}
       {{ $ttl := .Title | plainify }}
       {{ $authors := slice }}
-      {{ range .Params.authors }}
-        {{ if in (slice "me" "admin" "sara-candussio") . }}
-          {{ $authors = $authors | append (printf "<b>%s</b>" $me) }}
-        {{ else }}
-          {{ $authors = $authors | append (htmlEscape .) }}
-        {{ end }}
+      {{ $notes := .Params.author_notes | default slice }}
+      {{ range $i, $a := .Params.authors }}
+        {{ $name := htmlEscape $a }}
+        {{ if in (slice "me" "admin" "sara-candussio") $a }}{{ $name = printf "<b>%s</b>" $me }}{{ end }}
+        {{ if and (lt $i (len $notes)) (index $notes $i) }}{{ $name = printf "%s*" $name }}{{ end }}
+        {{ $authors = $authors | append $name }}
       {{ end }}
       <div class="rf-pub">
         <div>

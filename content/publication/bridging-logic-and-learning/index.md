@@ -2,6 +2,9 @@
 title: "Bridging Logic and Learning: Decoding Temporal Logic Embeddings via Transformers"
 authors:
   - sara-candussio
+  - Gaia Saveri
+  - Gabriele Sarti
+  - Luca Bortolussi
 date: "2025-07-10T00:00:00Z"
 doi: "https://doi.org/10.48550/arXiv.2507.07808"
 

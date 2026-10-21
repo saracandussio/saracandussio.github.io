@@ -2,6 +2,9 @@
 title: "Distilling Formal Logic into Neural Spaces: A Kernel Alignment Approach for Signal Temporal Logic"
 authors:
   - sara-candussio
+  - Gabriele Sarti
+  - Gaia Saveri
+  - Luca Bortolussi
 date: "2026-03-05T00:00:00Z"
 doi: "https://doi.org/10.48550/arXiv.2603.05198"
 publishDate: "2026-03-05T00:00:00Z"
