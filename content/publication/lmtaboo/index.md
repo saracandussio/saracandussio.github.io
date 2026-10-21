@@ -41,7 +41,7 @@ tags:
   - Constrained generation
   - Sparse autoencoders
   - Italian NLP
-featured: true
+featured: false
 
 url_pdf: https://arxiv.org/abs/2607.00601
 url_code: https://github.com/DanielSc4/LMtaboo

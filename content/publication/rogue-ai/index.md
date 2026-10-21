@@ -26,7 +26,7 @@ tags:
   - AI Safety
   - Turing Test
   - Italian NLP
-featured: true
+featured: false
 links:
 - name: arXiv page
   url: "https://arxiv.org/abs/2606.13310"

@@ -24,7 +24,7 @@ tags:
   - Neuro-Symbolic AI
   - Temporal Logic
 
-featured: true
+featured: false
 draft: false
 
 links:
