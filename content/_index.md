@@ -30,9 +30,9 @@ sections:
       title: '🧠 My Research'
       subtitle: ''
       text: |-
-        I'm interested in understanding the **generalization abilities of large language models (LLMs)**, identifying their limitations and exploring ways to encourage reasoning beyond memorization.
+        I study **how large language models reason**, and whether what they write actually reflects what they compute. Much of my recent work focuses on **Chain-of-Thought in large reasoning models**: when it is faithful, when it is epiphenomenal, and how much of it can be compressed away.
 
-        My work sits at the intersection of **Neuro-Symbolic AI**, **Reinforcement Learning for NLP**, and **multi-agent systems**. I'm particularly fascinated by how symbolic structure can guide and constrain neural learning.
+        I'm also interested in **interpretability and control** (e.g. steering models with sparse autoencoders under hard constraints) and in **AI safety**, from detecting deception in dialogue to making LLMs more robust through multi-agent debate.
 
         Feel free to reach out if you'd like to collaborate! 😃
     design:
