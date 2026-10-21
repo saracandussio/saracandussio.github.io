@@ -46,7 +46,7 @@ url_pdf: https://arxiv.org/abs/2607.28707
 url_code: https://github.com/saracandussio/Demystifying-Entropy-Selection
 
 image:
-  caption: "Share of the original CoT tokens needed to recover 90% of full-trace accuracy on AIME25, averaged over six models, with and without activation patching."
+  caption: "Compressing the trace and re-running the model fails, while patching the original activations into a few retained tokens recovers the right answer."
   focal_point: Center
   preview_only: false
 ---
