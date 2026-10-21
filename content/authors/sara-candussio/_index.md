@@ -209,4 +209,4 @@ My research looks at **how large language models reason**: whether their Chain-o
 
 I hold a BSc in Statistics and an MSc in Data Science and Scientific Computing, both from the University of Trieste. My Master's thesis explored how multi-agent debate can make compact LLMs more robust on Question Answering, and received a [Mention of Honor from the Italian Association of Computational Linguistics (AILC)](https://clic2025.unica.it/emanuele-pianta-award-for-the-best-masters-thesis/). 🤝
 
-Outside of research, I'm the vice-president of the [AI Student Society](https://ai2s.it/), and I previously worked as a research intern at [Rachael S.r.l.](https://rachael.swg.it/).
+Outside of research, I'm the president of the [AI Student Society](https://ai2s.it/), and I previously worked as a research intern at [Rachael S.r.l.](https://rachael.swg.it/).
