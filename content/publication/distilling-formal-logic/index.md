@@ -61,3 +61,4 @@ And beyond STL, this approach generalizes to **any domain with a meaningful but 
 Co-authored with [Gabriele Sarti](https://gsarti.com/), [Gaia Saveri](https://scholar.google.com/citations?user=Gaia_Saveri), and [Luca Bortolussi](https://ai-lab.units.it/?page_id=139).
 
 If you want to explore how to transfer a slow, expensive similarity function into Transformers, let's connect!
+![Kernel-based versus syntax-based (neural) embeddings of STL formulae.](fig-kernel-vs-neural.png)
