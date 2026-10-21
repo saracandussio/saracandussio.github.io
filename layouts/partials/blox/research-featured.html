@@ -1,0 +1,92 @@
+{{/* Custom block: research (left) + selected publications (right), gsarti.com-style */}}
+{{ $page := .wcPage }}
+{{ $block := .wcBlock }}
+{{ $title := $block.content.title | emojify | $page.RenderString }}
+{{ $text := $block.content.text | emojify | $page.RenderString | safeHTML }}
+{{ $pubs_title := $block.content.featured_title | default "Selected Publications" }}
+{{ $me := $block.content.me | default "Sara Candussio" }}
+{{ $query := where (where site.RegularPages "Section" "publication") "Params.featured" "==" true }}
+{{ $query = sort $query "Date" "desc" }}
+
+<style>
+  .rf{--rf-muted:#6b7280;--rf-line:#e5e7eb;--rf-chip:#eef2ff;--rf-chip-t:#4338ca;--rf-btn:#f9fafb;--rf-img:#f3f4f6}
+  .dark .rf{--rf-muted:#9ca3af;--rf-line:#374151;--rf-chip:#312e81;--rf-chip-t:#e0e7ff;--rf-btn:#1f2937;--rf-img:#1f2937}
+  .rf{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:grid;grid-template-columns:1fr;gap:3rem}
+  .rf-h{font-size:1.875rem;line-height:2.25rem;font-weight:700;margin-bottom:1.25rem}
+  .rf-int{margin-top:1.5rem}
+  .rf-int h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+  .rf-int ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.4rem}
+  .rf-int li{font-size:.85rem;padding:.2rem .65rem;border-radius:999px;background:var(--rf-chip);color:var(--rf-chip-t)}
+  .rf-pub{display:grid;grid-template-columns:1fr;gap:1rem;padding:1.25rem 0;border-top:1px solid var(--rf-line)}
+  .rf-pub:first-of-type{border-top:0;padding-top:0}
+  .rf-meta{font-size:.75rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--rf-muted);display:flex;gap:.5rem;align-items:center}
+  .rf-venue{background:var(--rf-chip);color:var(--rf-chip-t);padding:.1rem .5rem;border-radius:.25rem}
+  .rf-t{display:block;margin-top:.4rem;font-size:1.05rem;font-weight:700;line-height:1.35}
+  .rf-t:hover{text-decoration:underline}
+  .rf-a{font-size:.875rem;color:var(--rf-muted);margin-top:.35rem;line-height:1.4}
+  .rf-a b{color:inherit;font-weight:700;filter:brightness(.6)}
+  .dark .rf-a b{filter:brightness(1.4)}
+  .rf-btns{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+  .rf-btns a{font-size:.75rem;font-weight:600;padding:.2rem .6rem;border:1px solid var(--rf-line);border-radius:.375rem;background:var(--rf-btn)}
+  .rf-btns a:hover{border-color:var(--rf-chip-t)}
+  .rf-img{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:.375rem;background:var(--rf-img);display:block}
+  .rf-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:transform .2s}
+  .rf-img:hover img{transform:scale(1.04)}
+  @media (min-width:640px){.rf-pub{grid-template-columns:3fr 2fr;align-items:center}}
+  @media (min-width:1024px){.rf{grid-template-columns:1fr 2fr;align-items:start}.rf-left{position:sticky;top:6rem}}
+</style>
+
+<div class="rf">
+  <div class="rf-left">
+    <div class="rf-h text-gray-900 dark:text-white">{{ $title }}</div>
+    {{ with $text }}<div class="prose prose-slate dark:prose-invert">{{ . }}</div>{{ end }}
+    {{ with $block.content.interests }}
+    <div class="rf-int text-gray-900 dark:text-white">
+      <h3>Research interests</h3>
+      <ul>{{ range . }}<li>{{ . }}</li>{{ end }}</ul>
+    </div>
+    {{ end }}
+  </div>
+
+  <div>
+    <div class="rf-h text-gray-900 dark:text-white">{{ $pubs_title | emojify }}</div>
+    {{ range $query }}
+      {{ $p := . }}
+      {{ $link := .Params.external_link | default .Params.url_pdf | default .RelPermalink }}
+      {{ $ttl := .Title | plainify }}
+      {{ $authors := slice }}
+      {{ range .Params.authors }}
+        {{ if in (slice "me" "admin" "sara-candussio") . }}
+          {{ $authors = $authors | append (printf "<b>%s</b>" $me) }}
+        {{ else }}
+          {{ $authors = $authors | append (htmlEscape .) }}
+        {{ end }}
+      {{ end }}
+      <div class="rf-pub">
+        <div>
+          <div class="rf-meta">
+            {{ $venue := .Params.publication_short | default .Params.publication | markdownify | plainify }}
+            {{ with $venue }}<span class="rf-venue">{{ . }}</span>{{ end }}
+            {{ if not (strings.Contains $venue (string .Date.Year)) }}<span>{{ .Date.Year }}</span>{{ end }}
+          </div>
+          <a class="rf-t text-gray-900 dark:text-white" href="{{ $link }}" target="_blank" rel="noopener">{{ .Title }}</a>
+          {{ with $authors }}<div class="rf-a">{{ delimit . ", " | safeHTML }}</div>{{ end }}
+          <div class="rf-btns text-gray-700 dark:text-gray-200">
+            {{ with .Params.url_pdf }}<a href="{{ . }}" target="_blank" rel="noopener">Paper</a>{{ end }}
+            {{ with .Params.url_code }}<a href="{{ . }}" target="_blank" rel="noopener">Code</a>{{ end }}
+            {{ with .Params.url_dataset }}<a href="{{ . }}" target="_blank" rel="noopener">Dataset</a>{{ end }}
+            {{ with .Params.url_project }}<a href="{{ . }}" target="_blank" rel="noopener">Project</a>{{ end }}
+            {{ with .Params.url_slides }}<a href="{{ if hasPrefix . "http" }}{{ . }}{{ else }}{{ $p.RelPermalink }}{{ . }}{{ end }}" target="_blank" rel="noopener">Slides</a>{{ end }}
+          </div>
+        </div>
+        {{ with partial "functions/get_featured_image.html" . }}
+          {{ $img := . }}
+          {{ if ne .MediaType.SubType "gif" }}{{ $img = (.Fit "720x405").Process "webp" }}{{ end }}
+          <a class="rf-img" href="{{ $link }}" target="_blank" rel="noopener">
+            <img src="{{ $img.RelPermalink }}" alt="{{ $ttl }}" loading="lazy" decoding="async">
+          </a>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+</div>
