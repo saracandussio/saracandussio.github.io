@@ -37,7 +37,7 @@ sections:
       view: timeline
       columns: 1
   - block: research-featured
-    id: research
+    id: papers
     content:
       featured_title: Selected Publications
       interests:
