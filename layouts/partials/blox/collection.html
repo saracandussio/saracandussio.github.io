@@ -94,7 +94,7 @@
 
 <div class="flex flex-col items-center px-6">
 
-  {{ $config := dict "columns" ($block.design.columns | default 2) "len" (len $query) "fill_image" ($block.design.fill_image | default true) }}
+  {{ $config := dict "columns" ($block.design.columns | default 2) "len" (len $query) "fill_image" (cond (isset $block.design "fill_image") $block.design.fill_image true) }}
 
   {{ if eq $view "timeline" }}
 

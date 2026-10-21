@@ -76,6 +76,7 @@ sections:
     design:
       view: article-grid
       columns: 2
+      fill_image: false
   - block: collection
     content:
       title: Recent Publications
