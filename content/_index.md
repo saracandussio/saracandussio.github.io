@@ -4,7 +4,7 @@ date: 2022-10-24
 type: landing
 
 design:
-  spacing: "6rem"
+  spacing: "3.5rem"
 
 sections:
   - block: resume-biography-3
@@ -29,7 +29,7 @@ sections:
     id: news
     content:
       title: News
-      count: 0
+      count: 5
       filters:
         folders:
           - news
@@ -40,11 +40,6 @@ sections:
     id: papers
     content:
       featured_title: Selected Publications
-      interests:
-        - Faithful LLM Reasoning
-        - Chain-of-Thought
-        - Interpretability
-        - AI Safety
       title: '🧠 My Research'
       subtitle: ''
       text: |-
@@ -61,7 +56,7 @@ sections:
       title: Talks
       page_type: event
     design:
-      view: article-grid
+      view: list
       columns: 2
   - block: collection
     id: teaching
@@ -71,6 +66,8 @@ sections:
           filters:
             folders:
               - teaching
+    design:
+      view: list
   - block: collection
     content:
       title: Recent Publications

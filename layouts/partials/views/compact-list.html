@@ -1,0 +1,39 @@
+{{/* Compact row: date column + content. Publications get venue badge, authors and links. */}}
+{{ $item := .item }}
+{{ $me := "Sara Candussio" }}
+{{ $is_pub := eq $item.Section "publication" }}
+{{ $href := $item.Params.external_link | default $item.Params.external_url | default $item.RelPermalink }}
+{{ $ext := findRE "^https?://" $href }}
+{{ $date := $item.Date.Format "Jan 2006" }}
+{{ with $item.Params.date_end }}{{ $end := time.AsTime . }}{{ if ne ($end.Format "Jan 2006") $date }}{{ $date = printf "%s – %s" $date ($end.Format "Jan 2006") }}{{ end }}{{ end }}
+{{ $badge := "" }}
+{{ if $is_pub }}{{ $badge = $item.Params.publication_short | default $item.Params.publication | default "" | markdownify | plainify }}
+{{ else if eq $item.Section "event" }}{{ $badge = $item.Params.event | default "" }}{{ end }}
+{{ $summary := $item.Params.summary | default $item.Summary | plainify | htmlUnescape }}
+
+<div class="cl-row">
+  <time class="cl-date" datetime="{{ $item.Date.Format "2006-01-02" }}">{{ $date }}</time>
+  <div>
+    {{ with $badge }}<span class="cl-badge">{{ . }}</span>{{ end }}
+    <a class="cl-title text-gray-900 dark:text-white" href="{{ $href }}" {{ if $ext }}target="_blank" rel="noopener"{{ end }}>{{ $item.Title | emojify }}</a>
+    {{ if $is_pub }}
+      {{ $authors := slice }}
+      {{ $notes := $item.Params.author_notes | default slice }}
+      {{ range $i, $a := $item.Params.authors }}
+        {{ $name := htmlEscape $a }}
+        {{ if in (slice "me" "admin" "sara-candussio") $a }}{{ $name = printf "<b>%s</b>" $me }}{{ end }}
+        {{ if and (lt $i (len $notes)) (index $notes $i) }}{{ $name = printf "%s*" $name }}{{ end }}
+        {{ $authors = $authors | append $name }}
+      {{ end }}
+      {{ with $authors }}<div class="cl-sub">{{ delimit . ", " | safeHTML }}</div>{{ end }}
+      <div class="cl-btns">
+        {{ with $item.Params.url_pdf }}<a href="{{ . }}" target="_blank" rel="noopener">Paper</a>{{ end }}
+        {{ with $item.Params.url_code }}<a href="{{ . }}" target="_blank" rel="noopener">Code</a>{{ end }}
+        {{ with $item.Params.url_project }}<a href="{{ . }}" target="_blank" rel="noopener">Project</a>{{ end }}
+        {{ with $item.Params.url_slides }}<a href="{{ if hasPrefix . "http" }}{{ . }}{{ else }}{{ $item.RelPermalink }}{{ . }}{{ end }}" target="_blank" rel="noopener">Slides</a>{{ end }}
+      </div>
+    {{ else }}
+      {{ with $summary }}<div class="cl-sub">{{ . }}</div>{{ end }}
+    {{ end }}
+  </div>
+</div>

@@ -13,7 +13,7 @@ marketing:
     site_type: Personal
     local_business_type: ''
     org_name: ''
-    description: 'PhD student in Artificial Intelligence exploring LLM generalization and neuro-symbolic reasoning.'
+    description: 'PhD student in NLP at the University of Trieste, working on reasoning, Chain-of-Thought and interpretability in large language models.'
     twitter: 'SaraCandussio'
   analytics:
     google_analytics: ''
