@@ -8,7 +8,8 @@ publication_types: ["article"]
 publication: "Preprint"
 publication_short: "arXiv 2026"
 featured: true
-external_link: "/blogpost.html"
+external_link: https://commitment-boundary.danielsc4.it/
+url_project: https://commitment-boundary.danielsc4.it/
 abstract: >
   ...
 ---
