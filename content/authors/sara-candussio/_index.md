@@ -31,10 +31,9 @@ profiles:
 
 interests:
   - Reasoning in LLMs
-  - Interpretability for LLMs
+  - Chain-of-Thought Faithfulness
+  - Interpretability
   - AI Safety
-  - Multi-Agent LLMs
-  - Generalization in LLMs
 
 education:
   - area: PhD in Applied Data Science and Artificial Intelligence
@@ -204,10 +203,10 @@ awards:
 
 **Hello there**, I'm Sara!
 
-I'm a second-year PhD student in Natural Language Processing at the University of Trieste (Italy), where I work within the [AI Lab](https://ai-lab.units.it/) under the supervision of [Luca Bortolussi](https://ai-lab.units.it/?page_id=139) and [Gabriele Sarti](https://gsarti.com/). I was previously a visiting researcher at the [NLP group](https://huggingface.co/GroNLP) of the [Center for Language and Cognition (CLCG)](https://www.rug.nl/research/clcg/?lang=en).
+I'm a third-year PhD student in Natural Language Processing at the University of Trieste (Italy), where I work within the [AI Lab](https://ai-lab.units.it/) under the supervision of [Luca Bortolussi](https://ai-lab.units.it/?page_id=139) and [Gabriele Sarti](https://gsarti.com/). In 2026 I was a visiting researcher at the [NLP group](https://huggingface.co/GroNLP) of the [Center for Language and Cognition (CLCG)](https://www.rug.nl/research/clcg/?lang=en), University of Groningen.
 
-My current research focuses on understanding the reasoning abilities of large language models (LLMs), identifying their limitations, and exploring ways to encourage generalization that goes beyond memorization. I'm particularly interested in Mechanistic Interpretability, Reinforcement Learning paradigms and Neuro-Symbolic integration. You can read more in my [scholar personal profile](https://scholar.google.com/citations?user=ktAv1wgAAAAJ&hl=en). 🧠
+My research looks at **how large language models reason**: whether their Chain-of-Thought reflects what they actually compute, and how interpretability tools can help us monitor and steer them. You can find all my papers on [Google Scholar](https://scholar.google.com/citations?user=ktAv1wgAAAAJ&hl=en). 🧠
 
-I hold a Bachelor's degree in Statistics and a Master's degree in Artificial Intelligence. My Master's thesis explored how multi-agent systems can enhance the performance of extremely compact models on Question Answering tasks and received a [Mention of Honor from the Italian Association of Computational Linguistics (AILC)](https://clic2025.unica.it/emanuele-pianta-award-for-the-best-masters-thesis/). 🤝
+I hold a BSc in Statistics and an MSc in Data Science and Scientific Computing, both from the University of Trieste. My Master's thesis explored how multi-agent debate can make compact LLMs more robust on Question Answering, and received a [Mention of Honor from the Italian Association of Computational Linguistics (AILC)](https://clic2025.unica.it/emanuele-pianta-award-for-the-best-masters-thesis/). 🤝
 
-Outside of research, I'm the vice-president of the [AI Student Society](https://ai2s.it/), and previously I worked as a research intern at [Rachael S.r.l.](https://rachael.swg.it/).
+Outside of research, I'm the vice-president of the [AI Student Society](https://ai2s.it/), and I previously worked as a research intern at [Rachael S.r.l.](https://rachael.swg.it/).
