@@ -180,6 +180,12 @@ languages:
     percent: 10
 
 awards:
+  - title: 3rd Place, Black-Box Track, [Aletheia's Quest](https://aletheias-quest.github.io/winners.html)
+    date: '2026-08-25'
+    awarder: NDIF / Cadenza Labs
+    summary: |
+      Third place with team JSR (with Jacopo Zacchigna) in the black-box track of Aletheia's Quest, an LLM lie-detection competition.
+
   - title: Mention of Honor, "Best Master Thesis", [Emanuele Pianta Award](https://clic2025.unica.it/emanuele-pianta-award-for-the-best-masters-thesis/).
     date: '2025-01-01'
     awarder: CLiC-it 2025 / AILC
