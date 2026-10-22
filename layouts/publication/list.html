@@ -1,0 +1,82 @@
+{{ define "main" }}
+{{ $me := "Sara Candussio" }}
+<style>
+  .pl{--pl-muted:#6b7280;--pl-line:#e5e7eb;--pl-bg:#eef2ff;--pl-fg:#4338ca;--pl-btn:#f9fafb;--pl-img:#f3f4f6;--pl-tldr:#f8fafc}
+  .dark .pl{--pl-muted:#9ca3af;--pl-line:#374151;--pl-bg:#312e81;--pl-fg:#e0e7ff;--pl-btn:#1f2937;--pl-img:#1f2937;--pl-tldr:#111827}
+  .pl{max-width:1100px;margin:0 auto;padding:3rem 1.5rem 4rem}
+  .pl-h1{font-size:2.5rem;line-height:1.1;font-weight:800;margin-bottom:.75rem}
+  .pl-intro{color:var(--pl-muted);margin-bottom:2.5rem}
+  .pl-intro a{text-decoration:underline}
+  .pl-year{font-size:1.25rem;font-weight:700;color:var(--pl-muted);margin:2.5rem 0 .25rem;padding-bottom:.4rem;border-bottom:2px solid var(--pl-line)}
+  .pl-row{display:grid;grid-template-columns:1fr;gap:1rem;padding:1.4rem 0;border-bottom:1px solid var(--pl-line)}
+  .pl-meta{display:flex;gap:.5rem;align-items:center;font-size:.75rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--pl-muted)}
+  .pl-venue{background:var(--pl-bg);color:var(--pl-fg);padding:.1rem .5rem;border-radius:.25rem}
+  .pl-title{display:block;margin-top:.4rem;font-size:1.1rem;font-weight:700;line-height:1.35}
+  .pl-title:hover{text-decoration:underline}
+  .pl-auth{font-size:.9rem;color:var(--pl-muted);margin-top:.3rem;line-height:1.45}
+  .pl-auth b{font-weight:700;color:inherit;filter:brightness(.6)}
+  .dark .pl-auth b{filter:brightness(1.5)}
+  .pl-btns{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem;align-items:center}
+  .pl-btns a,.pl-tl-btn{font-size:.75rem;font-weight:600;padding:.2rem .6rem;border:1px solid var(--pl-line);border-radius:.375rem;background:var(--pl-btn);cursor:pointer;color:inherit}
+  .pl-btns a:hover,.pl-tl-btn:hover{border-color:var(--pl-fg)}
+  .pl-row.open .pl-tl-btn{background:var(--pl-bg);color:var(--pl-fg);border-color:var(--pl-fg)}
+  .pl-tldr-body{display:none}
+  .pl-row.open .pl-tldr-body{display:block;margin-top:.7rem;padding:.75rem 1rem;border-left:3px solid var(--pl-fg);background:var(--pl-tldr);border-radius:0 .375rem .375rem 0;font-size:.92rem;line-height:1.55}
+  .pl-tldr-body a{display:inline-block;margin-top:.4rem;font-weight:600;color:var(--pl-fg)}
+  .pl-img{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:.375rem;background:var(--pl-img);display:block}
+  .pl-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:transform .2s}
+  .pl-img:hover img{transform:scale(1.04)}
+  @media (min-width:700px){.pl-row{grid-template-columns:1fr 260px;gap:2rem;align-items:start}}
+</style>
+
+<div class="pl text-gray-900 dark:text-gray-100">
+  <h1 class="pl-h1">{{ .Title }}</h1>
+  <p class="pl-intro">{{ with .Params.subtitle }}{{ . | markdownify }}{{ else }}All my papers, newest first. Click a title for a short write-up, or open the TL;DR for the short version. Also on <a href="https://scholar.google.com/citations?user=ktAv1wgAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>.{{ end }}</p>
+
+  {{ range (.Pages.ByDate.Reverse.GroupByDate "2006") }}
+  <div class="pl-year">{{ .Key }}</div>
+  {{ range .Pages }}
+    {{ $p := . }}
+    {{ $has_page := or (gt (len (trim .RawContent " \n")) 0) .Params.abstract }}
+    {{ $href := cond $has_page .RelPermalink (.Params.external_link | default .Params.url_pdf | default .RelPermalink) }}
+    {{ $ext := findRE "^https?://" $href }}
+    {{ $venue := .Params.publication_short | default .Params.publication | default "" | markdownify | plainify }}
+    {{ $tldr := .Params.summary | default "" }}
+    {{ $authors := slice }}
+    {{ $notes := .Params.author_notes | default slice }}
+    {{ range $i, $a := .Params.authors }}
+      {{ $name := htmlEscape $a }}
+      {{ if in (slice "me" "admin" "sara-candussio") $a }}{{ $name = printf "<b>%s</b>" $me }}{{ end }}
+      {{ if and (lt $i (len $notes)) (index $notes $i) }}{{ $name = printf "%s*" $name }}{{ end }}
+      {{ $authors = $authors | append $name }}
+    {{ end }}
+    <article class="pl-row">
+      <div>
+        <div class="pl-meta">
+          {{ with $venue }}<span class="pl-venue">{{ . }}</span>{{ end }}
+          {{ if not (strings.Contains $venue (string .Date.Year)) }}<span>{{ .Date.Year }}</span>{{ end }}
+        </div>
+        <a class="pl-title" href="{{ $href }}" {{ if $ext }}target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>
+        {{ with $authors }}<div class="pl-auth">{{ delimit . ", " | safeHTML }}</div>{{ end }}
+        <div class="pl-btns">
+          {{ with .Params.url_pdf }}<a href="{{ . }}" target="_blank" rel="noopener">Paper</a>{{ end }}
+          {{ with .Params.url_code }}<a href="{{ . }}" target="_blank" rel="noopener">Code</a>{{ end }}
+          {{ with .Params.url_dataset }}<a href="{{ . }}" target="_blank" rel="noopener">Dataset</a>{{ end }}
+          {{ with .Params.url_project | default .Params.external_link }}<a href="{{ . }}" target="_blank" rel="noopener">Project</a>{{ end }}
+          {{ with .Params.url_slides }}<a href="{{ if hasPrefix . "http" }}{{ . }}{{ else }}{{ $p.RelPermalink }}{{ . }}{{ end }}" target="_blank" rel="noopener">Slides</a>{{ end }}
+          {{ with $tldr }}<button type="button" class="pl-tl-btn" aria-expanded="false" onclick="var r=this.closest('.pl-row');r.classList.toggle('open');this.setAttribute('aria-expanded',r.classList.contains('open'))">TL;DR</button>{{ end }}
+        </div>
+        {{ with $tldr }}<div class="pl-tldr-body">{{ . | markdownify }}{{ if $has_page }}<br><a href="{{ $p.RelPermalink }}">Read more →</a>{{ end }}</div>{{ end }}
+      </div>
+      {{ with partial "functions/get_featured_image.html" . }}
+        {{ $img := . }}
+        {{ if ne .MediaType.SubType "gif" }}{{ $img = (.Fit "640x360").Process "webp" }}{{ end }}
+        <a class="pl-img" href="{{ $href }}" {{ if $ext }}target="_blank" rel="noopener"{{ end }}>
+          <img src="{{ $img.RelPermalink }}" alt="{{ $p.Title | plainify }}" loading="lazy" decoding="async">
+        </a>
+      {{ end }}
+    </article>
+  {{ end }}
+  {{ end }}
+</div>
+{{ end }}
