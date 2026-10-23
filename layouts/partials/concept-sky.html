@@ -1,0 +1,117 @@
+<canvas class="concept-sky" aria-hidden="true"></canvas>
+<style>
+  .concept-sky{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse at 70% 20%,#14234a 0%,#0a1230 45%,#050816 100%)}
+  .bio3{position:relative;z-index:1}
+</style>
+<script>
+(function(){
+  var cv=document.currentScript.previousElementSibling.previousElementSibling;
+  var host=cv.parentElement, ctx=cv.getContext('2d');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Constellations: clusters of related concepts in the "sky" of ideas
+  var groups=[
+    ['reasoning','chain-of-thought','faithfulness','commitment'],
+    ['deception','truth','honesty','trust'],
+    ['interpretability','features','steering','circuits'],
+    ['entropy','compression','memorization','generalization'],
+    ['logic','language','meaning']
+  ];
+  var W=0,H=0,dpr=1,stars=[],concepts=[],links=[],t=0,running=true,visible=true;
+  var mouse={x:-1e4,y:-1e4,active:false,last:0};
+  function rnd(a,b){return a+Math.random()*(b-a)}
+  function build(){
+    stars=[];concepts=[];links=[];
+    var n=Math.min(420,Math.round(W*H/2600));
+    for(var i=0;i<n;i++)stars.push({x:Math.random()*W,y:Math.random()*H,z:rnd(.25,1),r:rnd(.3,1.25),p:rnd(0,6.28),s:rnd(.4,1.6)});
+    // place constellations in the empty parts of the sky, away from the text
+    var hr=host.getBoundingClientRect(), boxes=[];
+    host.querySelectorAll('.bio3-left > *, .bio3-right > *, .bio3-side > *').forEach(function(el){
+      var r=el.getBoundingClientRect(); if(r.width&&r.height)boxes.push([r.left-hr.left-24,r.top-hr.top-18,r.right-hr.left+24,r.bottom-hr.top+18]);
+    });
+    function free(x,y){ if(x<20||y<20||x>W-20||y>H-20)return false;
+      for(var k=0;k<boxes.length;k++){var b=boxes[k];if(x>b[0]&&x<b[2]&&y>b[1]&&y<b[3])return false;}
+      for(var k=0;k<concepts.length;k++){if(Math.hypot(concepts[k].x-x,concepts[k].y-y)<70)return false;}
+      return true; }
+    var centres=[];
+    groups.forEach(function(words){
+      var spread=Math.max(70,Math.min(W,H)*.12), cx=W/2, cy=H/2, best=-1;
+      for(var tries=0;tries<400;tries++){var x=rnd(0,W),y=rnd(0,H);if(!free(x,y))continue;
+        var m=1e9;centres.forEach(function(c){m=Math.min(m,Math.hypot(c[0]-x,c[1]-y));});
+        if(m>best){best=m;cx=x;cy=y;} }
+      centres.push([cx,cy]);
+      var placed=0;
+      words.forEach(function(w,i){
+        ctx.font='500 11px Inter, system-ui, sans-serif';var tw=ctx.measureText(w).width,x=cx,y=cy,ok=false;
+        for(var tries=0;tries<120&&!ok;tries++){var a=rnd(0,6.28),d=(i?rnd(.5,1):0)*spread*(1+tries/60);
+          x=cx+Math.cos(a)*d;y=cy+Math.sin(a)*d*.75;ok=free(x,y)&&free(x+12+tw,y-9)&&free(x+12+tw/2,y-9);}
+        if(!ok)return;
+        concepts.push({x:x,y:y,z:rnd(.85,1),w:w,p:rnd(0,6.28),glow:0});
+        if(placed>0)links.push([concepts.length-2,concepts.length-1]);
+        placed++;
+      });
+    });
+  }
+  function resize(){
+    var r=host.getBoundingClientRect();
+    dpr=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);build();draw();
+  }
+  function pos(o){ // gentle drift + parallax towards the observer
+    var px=(mouse.active?(mouse.x-W/2):0)*.015*o.z, py=(mouse.active?(mouse.y-H/2):0)*.015*o.z;
+    var x=(o.x-t*6*o.z)%W; if(x<0)x+=W;
+    return [x+px,o.y+py];
+  }
+  function observer(){ // where we are "looking": cursor, or a slow wandering gaze when idle/touch
+    if(mouse.active&&performance.now()-mouse.last<4000)return [mouse.x,mouse.y];
+    return [W*(.5+.35*Math.sin(t*.13)),H*(.5+.3*Math.sin(t*.21+1))];
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var ob=observer(), R=Math.max(160,Math.min(W,H)*.28);
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i],q=pos(s),tw=.55+.45*Math.sin(t*s.s+s.p);
+      ctx.globalAlpha=(.25+.6*s.z)*tw;ctx.fillStyle='#dbe4ff';
+      ctx.beginPath();ctx.arc(q[0],q[1],s.r*s.z+.2,0,6.28);ctx.fill();
+    }
+    ctx.lineWidth=.6;
+    for(var i=0;i<stars.length;i++){
+      var a=pos(stars[i]),da=Math.hypot(a[0]-ob[0],a[1]-ob[1]);if(da>R)continue;
+      for(var j=i+1;j<stars.length;j++){
+        var b=pos(stars[j]),d=Math.hypot(a[0]-b[0],a[1]-b[1]);
+        if(d<70){ctx.globalAlpha=(1-d/70)*(1-da/R)*.35;ctx.strokeStyle='#9fb4ff';
+          ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();}
+      }
+    }
+    var mx=mouse.active?(mouse.x-W/2)*.006:0,my=mouse.active?(mouse.y-H/2)*.006:0,cp=concepts.map(function(c){return [c.x+mx*c.z,c.y+my*c.z+Math.sin(t*.4+c.p)*1.5];});
+    concepts.forEach(function(c,i){
+      var d=Math.hypot(cp[i][0]-ob[0],cp[i][1]-ob[1]),target=Math.max(0,1-d/R);
+      c.glow+=(target-c.glow)*.08;
+    });
+    ctx.lineWidth=1;
+    links.forEach(function(l){
+      var a=cp[l[0]],b=cp[l[1]],g=Math.max(concepts[l[0]].glow,concepts[l[1]].glow);
+      ctx.globalAlpha=.07+.5*g;ctx.strokeStyle='#b9c8ff';
+      ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+    });
+    ctx.font='500 11px Inter, system-ui, sans-serif';ctx.textBaseline='middle';
+    concepts.forEach(function(c,i){
+      var x=cp[i][0],y=cp[i][1],tw=.75+.25*Math.sin(t*1.3+c.p),g=c.glow;
+      var halo=ctx.createRadialGradient(x,y,0,x,y,10+14*g);
+      halo.addColorStop(0,'rgba(200,215,255,'+(.35+.5*g)*tw+')');halo.addColorStop(1,'rgba(200,215,255,0)');
+      ctx.globalAlpha=1;ctx.fillStyle=halo;ctx.beginPath();ctx.arc(x,y,10+14*g,0,6.28);ctx.fill();
+      ctx.fillStyle='#ffffff';ctx.globalAlpha=.8*tw+.2*g;ctx.beginPath();ctx.arc(x,y,1.6+g,0,6.28);ctx.fill();
+      ctx.globalAlpha=.16+.7*g;ctx.fillStyle='#dbe4ff';ctx.fillText(c.w,x+8,y-9);
+    });
+    ctx.globalAlpha=1;
+  }
+  function loop(){ if(running&&visible){t+=1/60;draw();} requestAnimationFrame(loop); }
+  window.addEventListener('mousemove',function(e){var r=host.getBoundingClientRect();
+    mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;mouse.active=mouse.y>0&&mouse.y<r.height;mouse.last=performance.now();},{passive:true});
+  document.addEventListener('visibilitychange',function(){running=!document.hidden;});
+  if('IntersectionObserver' in window)new IntersectionObserver(function(e){visible=e[0].isIntersecting;}).observe(host);
+  if('ResizeObserver' in window)new ResizeObserver(resize).observe(host);else window.addEventListener('resize',resize);
+  resize();
+  if(!reduce)requestAnimationFrame(loop);
+})();
+</script>
