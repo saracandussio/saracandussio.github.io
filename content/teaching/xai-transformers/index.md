@@ -1,24 +1,8 @@
----
-title: Interpretability on Transformers
-summary: Guest lecture for the Explainable Artificial Intelligence course at the University of Trieste, with references and further reading.
-date: 2026-11-13
-publishDate: 2026-11-10
-authors:
-  - me
-tags:
-  - Interpretability
-  - Transformers
-  - XAI
-# links:
-#   - type: slides
-#     url: slides.pdf
----
+# References — Interpretability on Transformers
 
-Guest lecture for the **Explainable Artificial Intelligence** course at the University of Trieste (November 13th, 2026).
+*Explainable Artificial Intelligence — University of Trieste, Sara Candussio (November 13th, 2026)*
 
-Topics covered: the Transformer architecture (self-attention, LayerNorm, MLPs as key-value memories), logit lens, tuned lens and J-Lens, input attribution (gradient-based, perturbation-based, contrastive), model component importance (ablation, activation patching, causal tracing), linear representations, steering and function vectors, probing, superposition, sparse autoencoders and transcoders, circuits (induction heads, IOI), attribution graphs, and validating interpretability claims.
-
-Below are the references for every part of the lecture, plus resources to keep learning.
+References are grouped by the section of the lecture where they are used.
 
 ---
 
@@ -30,11 +14,7 @@ Below are the references for every part of the lecture, plus resources to keep l
 - Bau, D. (2026). *CS 7180: Neural Mechanics* (Spring 2026). Northeastern University. https://neural-mechanics.baulab.info
 - Joshi, S., Mueller, A., Reizinger, P., & Sridhar, D. (2026). *Causal Foundations for Interpretability: What Your Methods Actually Identify*. Tutorial at EMNLP 2026 (2026.emnlp-tutorials.5).
 - Sarti, G. Lectures and invited talks on interpretability for language models, e.g. *Interpretability for Language Models: Current Trends and Applications* (UCL, March 2026; National PhD in AI, May 2026). Slides and recordings: https://gsarti.com/events/
-- ARENA — Alignment Research Engineer Accelerator, mechanistic interpretability chapters. https://arena.education
-
-**Community**
-
-- Mechanistic Interpretability Workshop (ICML 2024, NeurIPS 2025, ICML 2026). https://mechinterpworkshop.com
+- Learn Mech Interp — an introductory primer to the core ideas of mechanistic interpretability. https://learnmechinterp.com
 
 **Tools**
 
