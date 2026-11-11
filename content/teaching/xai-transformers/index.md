@@ -1,8 +1,24 @@
-# References — Interpretability on Transformers
+---
+title: Interpretability on Transformers
+summary: Guest lecture for the Explainable Artificial Intelligence course at the University of Trieste, with references and further reading.
+date: 2026-11-13
+publishDate: 2026-11-10
+authors:
+  - sara-candussio
+tags:
+  - Interpretability
+  - Transformers
+  - XAI
+# links:
+#   - type: slides
+#     url: slides.pdf
+---
 
-*Explainable Artificial Intelligence — University of Trieste, Sara Candussio (November 13th, 2026)*
+Guest lecture for the **Explainable Artificial Intelligence** course at the University of Trieste (November 13th, 2026).
 
-References are grouped by the section of the lecture where they are used.
+Topics covered: the Transformer architecture (self-attention, LayerNorm, MLPs as key-value memories), logit lens, tuned lens and J-Lens, input attribution (gradient-based, perturbation-based, contrastive), model component importance (ablation, activation patching, causal tracing), linear representations, steering and function vectors, probing, superposition, sparse autoencoders and transcoders, circuits (induction heads, IOI), attribution graphs, and validating interpretability claims.
+
+Below are the references for every part of the lecture, plus resources to keep learning.
 
 ---
 
