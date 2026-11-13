@@ -23,6 +23,7 @@
   // x, y = posizione in gradi rispetto al centro della figura (y verso l'alto)
   // m = magnitudine: più è bassa, più la stella è luminosa
   // Le stelle con u sono lavori cliccabili; quelle senza u disegnano solo la figura.
+  // from = testo di un link nella Bio: la stella usa lo stesso link del sito (u resta come riserva).
   const fig = (name, az, alt, scale, stars, edges) => ({
     name, edges,
     stars: stars.map(s => {
@@ -103,13 +104,13 @@
     // Scorpione: il percorso, dalla testa alla coda
     fig("Path", 290, 40, 1.05, [
       { x: 8, y: 8, m: 2.6 },
-      { x: 7, y: 5, m: 2.3, l: "Rachael", t: "Research Scientist at Rachael S.r.l.", k: "Experience", u: "/experience/" },
+      { x: 7, y: 5, m: 2.3, l: "Rachael", t: "Research Scientist at Rachael S.r.l.", k: "Experience", u: "/experience/", from: "Rachael" },
       { x: 8, y: 2, m: 2.9 },
-      { x: 4, y: 2, m: 1.0, l: "PhD, Trieste", t: "PhD in Applied Data Science and Artificial Intelligence, University of Trieste", k: "Experience", u: "/experience/" },
+      { x: 4, y: 2, m: 1.0, l: "PhD, Trieste", t: "PhD in Applied Data Science and Artificial Intelligence, University of Trieste", k: "Experience", u: "/experience/", from: "AI Lab" },
       { x: 2, y: -1, m: 2.8 },
-      { x: 1, y: -5, m: 2.3, l: "Visiting CLCG", t: "Visiting researcher at CLCG, University of Groningen", k: "News", u: "/news/visiting-clcg/" },
+      { x: 1, y: -5, m: 2.3, l: "Visiting CLCG", t: "Visiting researcher at CLCG, University of Groningen", k: "Experience", u: "/news/visiting-clcg/", from: "Center for Language and Cognition" },
       { x: 0, y: -9, m: 3.0 }, { x: -1, y: -12, m: 3.6 }, { x: -3, y: -14, m: 3.3 }, { x: -7, y: -14, m: 1.9 }, { x: -9, y: -12, m: 3.0 },
-      { x: -8, y: -9, m: 1.6, l: "AI Student Society", t: "President of the AI Student Society", k: "Experience", u: "/experience/" },
+      { x: -8, y: -9, m: 1.6, l: "AI Student Society", t: "President of the AI Student Society", k: "Experience", u: "/experience/", from: "AI Student Society" },
       { x: -6.8, y: -8.6, m: 2.7 } ],
       [[0, 1], [2, 1], [1, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12]])
   ];
@@ -181,6 +182,19 @@
   if (getComputedStyle(host).position === "static") host.style.position = "relative";
   host.style.isolation = "isolate";
 
+  // Le stelle con "from" riprendono il link scritto nella Bio, così restano sempre allineate al sito
+  const bioLinks = [...host.querySelectorAll("a[href]")];
+  for (const c of CONSTELLATIONS) for (const s of c.stars) if (s.from) {
+    const a = bioLinks.find(a => a.textContent.replace(/\s+/g, " ").includes(s.from));
+    if (a) s.u = a.href;
+  }
+  // Pagine interne che non esistono (più) sul sito: la stella resta nella figura ma non porta a una pagina vuota
+  if (auto.length) {
+    const live = new Set(auto.map(p => p.u));
+    for (const c of CONSTELLATIONS) for (const s of c.stars)
+      if (s.u && /^\/(publication|project|event|teaching|news)\//.test(s.u) && !live.has(s.u)) delete s.u;
+  }
+
   const style = document.createElement("style");
   style.textContent = `
     .sky-bg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#050816}
@@ -211,6 +225,7 @@
     #sky-overlay .sky-title{margin:.3rem 2rem .9rem 0;font-size:1.05rem;line-height:1.35;font-weight:600;color:#fff}
     #sky-overlay .sky-go{display:inline-block;padding:.45rem 1rem;border-radius:999px;background:#f3e3bd;color:#0b1020;font-weight:600;font-size:.9rem;text-decoration:none}
     #sky-overlay .sky-x{position:absolute;top:.55rem;right:.6rem;width:2rem;height:2rem;border:0;border-radius:50%;background:transparent;color:#9fb0dc;font-size:1.3rem;line-height:1;cursor:pointer}
+    .sky-nobg::before,.sky-nobg::after{background:transparent!important}
     .sky-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
     @media (max-width:640px){.sky-launch{top:.75rem;right:.75rem;font-size:.82rem;padding:.4rem .8rem}}`;
   document.head.appendChild(style);
@@ -226,6 +241,21 @@
   nav.innerHTML = "<ul>" + CONSTELLATIONS.flatMap(c => c.stars.filter(s => s.u).map(s =>
     `<li><a href="${s.u}">${c.name}, ${s.k}: ${s.t}</a></li>`)).join("") + "</ul>";
   host.prepend(bg); host.append(launch, nav);
+
+  // Se la sezione ha già uno sfondo disegnato da un elemento interno (colore pieno o immagine),
+  // quello copre il cielo: lo rendo trasparente. Card e riquadri piccoli non vengono toccati.
+  const hostBox = host.getBoundingClientRect(), hostArea = hostBox.width * hostBox.height;
+  const covers = cs => cs.backgroundImage !== "none" || !/^(transparent|rgba\(.*,\s*0\))$/.test(cs.backgroundColor);
+  [host, ...host.querySelectorAll("*")].forEach(el => {
+    if (bg.contains(el) || el === launch || nav.contains(el)) return;
+    const r = el.getBoundingClientRect();
+    if (r.width * r.height < hostArea * .6) return;
+    if (el !== host && covers(getComputedStyle(el))) el.style.setProperty("background", "transparent", "important");
+    for (const pe of ["::before", "::after"]) {        // sfondi disegnati con pseudo-elementi
+      const cs = getComputedStyle(el, pe);
+      if (cs.content !== "none" && covers(cs)) el.classList.add("sky-nobg");
+    }
+  });
 
   const overlay = document.createElement("div");
   overlay.id = "sky-overlay"; overlay.hidden = true;
@@ -396,7 +426,10 @@
         else {
           card.querySelector(".sky-meta").textContent = `${h.c.name}, ${h.s.k.toLowerCase()}`;
           card.querySelector(".sky-title").textContent = h.s.t;
-          card.querySelector(".sky-go").href = h.s.u;
+          const go = card.querySelector(".sky-go");
+          go.href = h.s.u;
+          const external = /^https?:/.test(h.s.u) && !h.s.u.startsWith(location.origin);
+          go.target = external ? "_blank" : ""; go.rel = external ? "noopener" : "";
           card.hidden = false; hint.style.opacity = 0;
         }
         if (reduce) draw(0);
