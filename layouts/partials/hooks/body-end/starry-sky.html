@@ -1,0 +1,473 @@
+<!--
+  Cielo stellato per la landing page.
+  - Sfondo: dietro la sezione Bio, cielo stellato senza scritte; le costellazioni si accendono piano a turno.
+  - Pulsante "Explore the research sky": apre il planetario interattivo a tutto schermo.
+  Posizione nel repo:  layouts/partials/hooks/body-end/starry-sky.html
+  Si attiva SOLO sulla home ("/"); sulle altre pagine non fa nulla.
+  Per aggiungere/spostare lavori modifica solo CONSTELLATIONS.
+  fig(nome, az, alt, scala, stelle, linee): az = direzione del centro (0 = Nord, 90 = Est...), alt = altezza (0-80).
+  l = etichetta corta sul cielo, t = titolo completo nella scheda, k = tipo.
+-->
+{{- /* Hugo elenca qui a ogni build tutte le pagine del sito: le nuove compaiono da sole nel cielo */ -}}
+{{- $items := slice -}}
+{{- range where site.RegularPages "Section" "in" (slice "publication" "project" "event" "teaching" "news") -}}
+  {{- $items = $items | append (dict "t" .Title "u" .RelPermalink "s" .Section "d" (.Date.Format "2006-01-02")) -}}
+{{- end -}}
+<script type="application/json" id="sky-auto">{{ $items | jsonify | safeJS }}</script>
+<script>
+(() => {
+  const path = location.pathname.replace(/index\.html$/, "");
+  if (path !== "/" && !window.SKY_FORCE) return;
+
+  // Ogni costellazione ha la forma di una costellazione reale.
+  // x, y = posizione in gradi rispetto al centro della figura (y verso l'alto)
+  // m = magnitudine: più è bassa, più la stella è luminosa
+  // Le stelle con u sono lavori cliccabili; quelle senza u disegnano solo la figura.
+  const fig = (name, az, alt, scale, stars, edges) => ({
+    name, edges,
+    stars: stars.map(s => {
+      const a2 = alt + s.y * scale;
+      return { ...s, alt: a2, az: az + s.x * scale / Math.cos(a2 * Math.PI / 180) };
+    })
+  });
+
+  const CONSTELLATIONS = [
+    // Cigno (Croce del Nord): è al centro della vista iniziale
+    fig("Interpretability", 25, 40, 1.2, [
+      { x: 2, y: 9, m: 1.3, l: "Demystifying Entropy", t: "Demystifying Entropy-based Selection for Chain-of-Thought Compression in Large Reasoning Models", k: "Paper", u: "/publication/demystifying-entropy/" },
+      { x: 0, y: 0, m: 2.2, l: "Commitment Boundary", t: "Beyond the Commitment Boundary: Probing Epiphenomenal Chain-of-Thought in Large Reasoning Models", k: "Paper", u: "/publication/commitment-boundary/" },
+      { x: -6, y: -15, m: 3.0, l: "Reading Between the Tokens", t: "Reading Between the Tokens: Uncovering the Semantic Minima of AI Monologues", k: "Talk", u: "/event/clcg-linguistics-lunch/" },
+      { x: -3, y: -7, m: 3.9 }, { x: -7, y: 4, m: 2.9 }, { x: 6, y: -5, m: 2.5 }, { x: 10, y: -11, m: 3.2 }, { x: -12, y: 8, m: 3.8 } ],
+      [[0, 1], [1, 3], [3, 2], [4, 1], [1, 5], [5, 6], [4, 7]]),
+
+    // Cassiopea (la W)
+    fig("Model behaviour", 80, 42, 1.2, [
+      { x: -9, y: 3, m: 2.3 },
+      { x: -5, y: -2, m: 2.2, l: "RogueAI", t: "RogueAI: A Reverse Turing Test for Detecting Licensed AI Deception in Dialogue", k: "Paper", u: "/publication/rogue-ai/" },
+      { x: 0, y: 1, m: 2.2, l: "OverRef", t: "OverRef: Studying Over-Refusal in Large Language Models", k: "Project", u: "/project/overref/" },
+      { x: 4, y: -3, m: 2.7, l: "LM Taboo", t: "“Don’t Say It!”: Constraints, Compliance, and Communication when Language Models Play Taboo", k: "Paper", u: "/publication/lmtaboo/" },
+      { x: 8, y: 2, m: 3.4 } ],
+      [[0, 1], [1, 2], [2, 3], [3, 4]]),
+
+    // Corona Boreale (l'arco)
+    fig("Reasoning & agents", 335, 38, 2.2, [
+      { x: -6, y: 2, m: 3.7 },
+      { x: -5, y: -1, m: 3.6, l: "Agentic benchmarks", t: "Agentic reasoning benchmarks, by tier", k: "Project", u: "/project/agentic-benchmarks/" },
+      { x: -2.5, y: -3, m: 3.8 },
+      { x: 0, y: -3.5, m: 2.2, l: "Dialectic Pipeline", t: "A Dialectic Pipeline for Improving LLM Robustness", k: "Paper", u: "/publication/dialectic-pipeline/" },
+      { x: 2.5, y: -3, m: 3.8 },
+      { x: 4.5, y: -1.5, m: 3.6, l: "LLMs & multi-agent systems", t: "Large Language Models: Potenzialità, Limiti e Sistemi Multi-Agent", k: "Talk", u: "/event/novalia-llm-workshop/" },
+      { x: 5.5, y: 1, m: 4.1 } ],
+      [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]),
+
+    // Grande Carro: le conferenze, in ordine lungo il manico
+    fig("Conferences", 146, 40, 1.6, [
+      { x: -11, y: 1, m: 1.9, l: "ECML PKDD 2025", t: "ECML PKDD 2025: presenting Bridging Logic and Learning", k: "Conference", u: "/publication/bridging-logic-and-learning/" },
+      { x: -5.5, y: 3, m: 2.1, l: "NeSy 2026", t: "NeSy 2026: oral presentation", k: "Conference", u: "/news/nesy-2026-oral/" },
+      { x: -1, y: 2.5, m: 1.8, l: "CLiC-it 2026", t: "CLiC-it 2026: LM Taboo (oral) and RogueAI (poster)", k: "Conference", u: "/news/lm-taboo-clicit-2026/" },
+      { x: 4.5, y: 1.5, m: 3.3 }, { x: 5, y: -2.5, m: 2.4 }, { x: 10, y: -1, m: 2.4 },
+      { x: 10, y: 4, m: 1.8, l: "BlackboxNLP 2026", t: "BlackboxNLP 2026: Demystifying Entropy-based Selection", k: "Conference", u: "/news/demystifying-blackboxnlp/" } ],
+      [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]]),
+
+    // Lira: Vega è la stella più luminosa
+    fig("Competitions", 185, 42, 2.1, [
+      { x: 0, y: 4, m: 0.0, l: "Third place", t: "Third place at NDIF Aletheia’s Quest (Black-Box Track)", k: "Award", u: "/news/aletheias-quest-third-place/" },
+      { x: -1.2, y: 4.8, m: 4.6 }, { x: 1, y: 1, m: 4.3 }, { x: 3.2, y: 0, m: 4.3 },
+      { x: 3, y: -5, m: 3.2 },
+      { x: 0.3, y: -4.6, m: 3.5, l: "Aletheia’s Quest", t: "Participating in the NDIF Aletheia’s Quest Competition", k: "News", u: "/news/ndif-aletheias-quest/" } ],
+      [[0, 1], [0, 2], [2, 3], [3, 4], [4, 5], [5, 2]]),
+
+    // Orione: dall'altra parte del cielo rispetto alla vista iniziale
+    fig("Neuro-symbolic AI", 212, 36, 1.2, [
+      { x: -6, y: 8, m: 0.5, l: "Distilling Formal Logic", t: "Distilling Formal Logic into Neural Spaces: A Kernel Alignment Approach for Signal Temporal Logic", k: "Paper", u: "/publication/distilling-formal-logic/" },
+      { x: 5, y: 7, m: 1.6, l: "STLDec", t: "STLDec: Decoding Temporal Logic Embeddings via Transformers", k: "Project", u: "/project/stldec/" },
+      { x: -0.5, y: 12, m: 3.4 },
+      { x: -2, y: 0, m: 1.8 },
+      { x: 0, y: 0.5, m: 1.7, l: "Dagstuhl", t: "Bridging Logic and Learning: Decoding Temporal Logic Embeddings via Transformers", k: "Talk", u: "/event/dagstuhl-rtg-symposium/" },
+      { x: 2, y: 1.2, m: 2.2 },
+      { x: -5, y: -8, m: 2.1, l: "STL kernel alignment", t: "Distilling Formal Logic into Neural Spaces", k: "Project", u: "/project/stlenc/" },
+      { x: 6, y: -7, m: 0.1, l: "Bridging Logic and Learning", t: "Bridging Logic and Learning: Decoding Temporal Logic Embeddings via Transformers", k: "Paper", u: "/publication/bridging-logic-and-learning/" } ],
+      [[2, 0], [2, 1], [0, 1], [0, 3], [1, 5], [3, 4], [4, 5], [3, 6], [5, 7]]),
+
+    // Leone: la falce e la coda
+    fig("Teaching", 247, 32, .95, [
+      { x: 0, y: 0, m: 1.4, l: "Interpretability on Transformers", t: "Interpretability on Transformers", k: "Lecture", u: "/teaching/xai-transformers/" },
+      { x: 1, y: 4, m: 3.5 },
+      { x: 1, y: 8, m: 2.0, l: "Probabilistic ML", t: "Probabilistic Machine Learning", k: "Course", u: "/teaching/probabilistic-ml/" },
+      { x: -1, y: 11, m: 3.4 }, { x: -4, y: 12, m: 3.9 }, { x: -6, y: 9, m: 3.0 },
+      { x: 12, y: 7, m: 2.6 },
+      { x: 18, y: 3, m: 2.1, l: "TriesteNext", t: "Dentro la mente: macchine intelligenti e cervelli umani a confronto", k: "Talk", u: "/event/triestenext-2026/" },
+      { x: 12, y: 2, m: 3.3 } ],
+      [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [2, 6], [6, 7], [7, 8], [8, 0]]),
+
+    // Scorpione: il percorso, dalla testa alla coda
+    fig("Path", 290, 40, 1.05, [
+      { x: 8, y: 8, m: 2.6 },
+      { x: 7, y: 5, m: 2.3, l: "Rachael", t: "Research Scientist at Rachael S.r.l.", k: "Experience", u: "/experience/" },
+      { x: 8, y: 2, m: 2.9 },
+      { x: 4, y: 2, m: 1.0, l: "PhD, Trieste", t: "PhD in Applied Data Science and Artificial Intelligence, University of Trieste", k: "Experience", u: "/experience/" },
+      { x: 2, y: -1, m: 2.8 },
+      { x: 1, y: -5, m: 2.3, l: "Visiting CLCG", t: "Visiting researcher at CLCG, University of Groningen", k: "News", u: "/news/visiting-clcg/" },
+      { x: 0, y: -9, m: 3.0 }, { x: -1, y: -12, m: 3.6 }, { x: -3, y: -14, m: 3.3 }, { x: -7, y: -14, m: 1.9 }, { x: -9, y: -12, m: 3.0 },
+      { x: -8, y: -9, m: 1.6, l: "AI Student Society", t: "President of the AI Student Society", k: "Experience", u: "/experience/" },
+      { x: -6.8, y: -8.6, m: 2.7 } ],
+      [[0, 1], [2, 1], [1, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12]])
+  ];
+
+  // Pagine da non mostrare nel cielo (es. doppioni di stelle già presenti)
+  const HIDE = ["/news/rogueai-clicit-2026/", "/news/clcg-linguistics-lunch-talk/"];
+
+  // Contenuti nuovi: tutto ciò che è sul sito ma non è ancora in una costellazione
+  // finisce in "New stars". Per dargli un posto vero, spostalo in CONSTELLATIONS.
+  let auto = [];
+  try { auto = JSON.parse(document.getElementById("sky-auto").textContent); } catch (e) {}
+  const known = new Set([...HIDE, ...CONSTELLATIONS.flatMap(c => c.stars.map(s => s.u).filter(Boolean))]);
+  const KIND = { publication: "Paper", project: "Project", event: "Talk", teaching: "Lecture", news: "News" };
+  const fresh = auto.filter(p => p.u && !known.has(p.u)).sort((a, b) => (a.d < b.d ? -1 : 1));
+  if (fresh.length) CONSTELLATIONS.push({
+    name: "New stars",
+    stars: fresh.map((p, i) => {
+      const t = p.t.replace(/^[^\p{L}\p{N}“"]+/u, "");
+      return { l: t.length > 28 ? t.slice(0, 26) + "…" : t, t, k: KIND[p.s] || "Page", u: p.u, m: 2.5,
+               az: 99 + (i % 2) * 7 + Math.floor(i / 6) * 3, alt: 24 + (i % 6) * 8 };
+    }),
+    edges: fresh.slice(1).map((_, i) => [i, i + 1])
+  });
+
+  const D = Math.PI / 180;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const vec = (az, alt) => { const a = az * D, b = alt * D, c = Math.cos(b); return [c * Math.sin(a), Math.sin(b), c * Math.cos(a)]; };
+  const dot = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2];
+  const gauss = () => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(6.283 * Math.random());
+  for (const c of CONSTELLATIONS) for (const s of c.stars) s.v = vec(s.az, s.alt);
+
+  // ---- stelle di fondo e Via Lattea (condivise da sfondo e planetario) ----
+  const TINTS = ["255,255,255", "200,215,255", "255,238,214", "255,214,178"];
+  const field = Array.from({ length: 2600 }, () => ({
+    v: vec(Math.random() * 360, Math.asin(Math.random() * 1.1 - .1) / D),
+    r: .3 + Math.random() ** 3 * 1.7, a: .25 + Math.random() * .6,
+    c: TINTS[Math.random() * 4 | 0], p: Math.random() * 6.28, s: .0008 + Math.random() * .002 }));
+  const band = (lon, lat) => {
+    let [x, y, z] = vec(lon, lat);
+    const t = 62 * D, q = 25 * D;
+    [x, y] = [x * Math.cos(t) - y * Math.sin(t), x * Math.sin(t) + y * Math.cos(t)];
+    [x, z] = [x * Math.cos(q) + z * Math.sin(q), -x * Math.sin(q) + z * Math.cos(q)];
+    return [x, y, z];
+  };
+  const milkyDust = Array.from({ length: 1100 }, () => ({ v: band(Math.random() * 360, gauss() * 6), r: .25 + Math.random() * .6, a: .15 + Math.random() * .4 }));
+  const milkyGlow = Array.from({ length: 170 }, () => ({ v: band(Math.random() * 360, gauss() * 4.5), s: 40 + Math.random() * 70,
+    a: .03 + Math.random() * .05, c: Math.random() < .7 ? [150, 170, 230] : [210, 180, 220] }));
+  const sprite = (() => {
+    const s = document.createElement("canvas"); s.width = s.height = 64;
+    const g = s.getContext("2d"), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return s;
+  })();
+  const tints = new Map();
+  function tint(c) {
+    const key = c.join();
+    if (!tints.has(key)) {
+      const s = document.createElement("canvas"); s.width = s.height = 64;
+      const g = s.getContext("2d"); g.drawImage(sprite, 0, 0);
+      g.globalCompositeOperation = "source-in"; g.fillStyle = `rgb(${key})`; g.fillRect(0, 0, 64, 64);
+      tints.set(key, s);
+    }
+    return tints.get(key);
+  }
+
+  // ---- DOM ----
+  const host = document.querySelector("main section, .page-body section, section");
+  if (!host) return;
+  if (getComputedStyle(host).position === "static") host.style.position = "relative";
+  host.style.isolation = "isolate";
+
+  const style = document.createElement("style");
+  style.textContent = `
+    .sky-bg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#050816}
+    .sky-bg canvas{display:block;width:100%;height:100%}
+    .sky-veil{position:absolute;inset:0;background:
+      radial-gradient(ellipse 65% 55% at 55% 45%,rgba(5,8,22,.45),rgba(5,8,22,0) 80%)}
+    .sky-launch{position:absolute;top:1.25rem;right:1.5rem;z-index:2;display:inline-flex;align-items:center;gap:.5rem;
+      padding:.5rem 1rem;border-radius:999px;border:1px solid rgba(200,215,255,.35);background:rgba(10,16,40,.45);
+      -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#e9edf9;font:inherit;font-size:.9rem;cursor:pointer;
+      transition:border-color .2s,background .2s}
+    .sky-launch:hover{border-color:rgba(243,227,189,.8);background:rgba(20,28,62,.6)}
+    .sky-launch span{color:#f3e3bd}
+    .sky-launch:focus-visible,#sky-overlay button:focus-visible,#sky-overlay a:focus-visible{outline:2px solid #f3e3bd;outline-offset:3px}
+    #sky-overlay{position:fixed;inset:0;z-index:2000;background:#050816;color:#e9edf9;font-family:inherit;animation:skyFade .3s ease-out}
+    #sky-overlay[hidden]{display:none}
+    @keyframes skyFade{from{opacity:0}}
+    #sky-overlay canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none}
+    #sky-overlay canvas.dragging{cursor:grabbing}
+    #sky-overlay .sky-hint{position:absolute;left:1.25rem;bottom:1.4rem;margin:0;font-size:.82rem;color:rgba(190,205,240,.6);pointer-events:none;transition:opacity .3s}
+    #sky-overlay .sky-close{position:absolute;top:1rem;right:1rem;width:2.6rem;height:2.6rem;border-radius:50%;
+      border:1px solid rgba(150,175,240,.35);background:rgba(10,16,40,.5);color:#e9edf9;font-size:1.4rem;line-height:1;cursor:pointer}
+    #sky-overlay .sky-card{position:absolute;left:50%;bottom:1.25rem;transform:translateX(-50%);width:min(23rem,calc(100% - 2rem));box-sizing:border-box;
+      padding:1rem 1.1rem 1.1rem;border-radius:14px;background:rgba(12,18,40,.82);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+      border:1px solid rgba(150,175,240,.2);animation:skyIn .25s ease-out}
+    #sky-overlay .sky-card[hidden]{display:none}
+    @keyframes skyIn{from{opacity:0;transform:translate(-50%,12px)}}
+    #sky-overlay .sky-meta{margin:0;font-size:.78rem;color:#9fb0dc}
+    #sky-overlay .sky-title{margin:.3rem 2rem .9rem 0;font-size:1.05rem;line-height:1.35;font-weight:600;color:#fff}
+    #sky-overlay .sky-go{display:inline-block;padding:.45rem 1rem;border-radius:999px;background:#f3e3bd;color:#0b1020;font-weight:600;font-size:.9rem;text-decoration:none}
+    #sky-overlay .sky-x{position:absolute;top:.55rem;right:.6rem;width:2rem;height:2rem;border:0;border-radius:50%;background:transparent;color:#9fb0dc;font-size:1.3rem;line-height:1;cursor:pointer}
+    .sky-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+    @media (max-width:640px){.sky-launch{top:.75rem;right:.75rem;font-size:.82rem;padding:.4rem .8rem}}`;
+  document.head.appendChild(style);
+
+  const bg = document.createElement("div");
+  bg.className = "sky-bg"; bg.setAttribute("aria-hidden", "true");
+  bg.innerHTML = `<canvas></canvas><div class="sky-veil"></div>`;
+  const launch = document.createElement("button");
+  launch.className = "sky-launch"; launch.type = "button";
+  launch.innerHTML = `<span aria-hidden="true">✦</span> Explore the research sky`;
+  const nav = document.createElement("nav");
+  nav.className = "sky-sr"; nav.setAttribute("aria-label", "Research map");
+  nav.innerHTML = "<ul>" + CONSTELLATIONS.flatMap(c => c.stars.filter(s => s.u).map(s =>
+    `<li><a href="${s.u}">${c.name}, ${s.k}: ${s.t}</a></li>`)).join("") + "</ul>";
+  host.prepend(bg); host.append(launch, nav);
+
+  const overlay = document.createElement("div");
+  overlay.id = "sky-overlay"; overlay.hidden = true;
+  overlay.setAttribute("role", "dialog"); overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", "Research sky");
+  overlay.innerHTML = `
+    <canvas aria-hidden="true"></canvas>
+    <p class="sky-hint">Drag to look around. Tap a star to see the work.</p>
+    <button class="sky-close" type="button" aria-label="Close the sky">×</button>
+    <div class="sky-card" hidden>
+      <button class="sky-x" type="button" aria-label="Close card">×</button>
+      <p class="sky-meta"></p><p class="sky-title"></p>
+      <a class="sky-go" href="#">Open page</a>
+    </div>`;
+  document.body.append(overlay);
+  const card = overlay.querySelector(".sky-card"), hint = overlay.querySelector(".sky-hint");
+  const font = getComputedStyle(document.body).fontFamily;
+
+  // ---- motore del cielo: una istanza per lo sfondo, una per il planetario ----
+  function makeSky(canvas, interactive) {
+    const ctx = canvas.getContext("2d"), pos = new Map();
+    const sky = { az: 25, alt: interactive ? 22 : 38, sel: null, hover: null, running: false };
+    let W, H, S, cx, cy, f, r, u, drag = null, lastTouch = -1e9, prev = 0;
+
+    sky.resize = () => {
+      const dpr = Math.min(devicePixelRatio || 1, interactive ? 2 : 1.5);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      if (!W || !H) return;
+      canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      S = (interactive ? Math.max(W, H * 1.15) : Math.max(W, H)) / 2 / .93;
+      cx = W / 2; cy = H * (interactive ? .58 : .5);
+    };
+    const setView = () => {
+      const a = sky.az * D, b = sky.alt * D;
+      f = vec(sky.az, sky.alt); r = [Math.cos(a), 0, -Math.sin(a)];
+      u = [-Math.sin(b) * Math.sin(a), Math.cos(b), -Math.sin(b) * Math.cos(a)];
+    };
+    const proj = v => { const z = dot(v, f); if (z < -.15) return null; const k = 2 / (1 + z); return [cx + dot(v, r) * k * S, cy - dot(v, u) * k * S]; };
+    const onScreen = p => p && p[0] > -80 && p[0] < W + 80 && p[1] > -80 && p[1] < H + 80;
+    const polyline = pts => {
+      let open = false; ctx.beginPath();
+      for (const v of pts) { const p = proj(v); if (!p) { open = false; continue; } open ? ctx.lineTo(...p) : ctx.moveTo(...p); open = true; }
+      ctx.stroke();
+    };
+
+    function draw(t) {
+      if (!W) return;
+      setView();
+      const g0 = ctx.createLinearGradient(0, 0, 0, H);
+      g0.addColorStop(0, "#03050f"); g0.addColorStop(.7, "#0a1330"); g0.addColorStop(1, interactive ? "#16234a" : "#0a1330");
+      ctx.fillStyle = g0; ctx.fillRect(0, 0, W, H);
+
+      ctx.globalCompositeOperation = "lighter";
+      for (const g of milkyGlow) { const p = proj(g.v); if (!onScreen(p)) continue; ctx.globalAlpha = g.a; ctx.drawImage(tint(g.c), p[0] - g.s, p[1] - g.s, g.s * 2, g.s * 2); }
+      ctx.globalAlpha = 1;
+      for (const d of milkyDust) { const p = proj(d.v); if (!onScreen(p)) continue; ctx.fillStyle = `rgba(225,230,255,${d.a})`; ctx.fillRect(p[0], p[1], d.r * 1.6, d.r * 1.6); }
+      for (const d of field) {
+        const p = proj(d.v); if (!onScreen(p)) continue;
+        const tw = reduce ? 1 : .7 + .3 * Math.sin(t * d.s + d.p);
+        ctx.fillStyle = `rgba(${d.c},${d.a * tw})`; ctx.beginPath(); ctx.arc(p[0], p[1], d.r, 0, 6.283); ctx.fill();
+        if (d.r > 1.5) { ctx.globalAlpha = .25 * tw; ctx.drawImage(sprite, p[0] - 7, p[1] - 7, 14, 14); ctx.globalAlpha = 1; }
+      }
+      ctx.globalCompositeOperation = "source-over";
+
+      if (interactive) {
+        ctx.strokeStyle = "rgba(120,150,230,.12)"; ctx.lineWidth = .7;
+        for (let a = 20; a <= 80; a += 20) polyline(Array.from({ length: 121 }, (_, i) => vec(i * 3, a)));
+        for (let z = 0; z < 360; z += 30) polyline(Array.from({ length: 30 }, (_, i) => vec(z, i * 3)));
+      }
+
+      CONSTELLATIONS.forEach((c, ci) => {
+        const pts = c.stars.map(s => { const p = proj(s.v); pos.set(s, p); return p; });
+        if (!pts.some(onScreen)) return;
+        const on = (sky.hover && sky.hover.c === c) || (sky.sel && sky.sel.c === c);
+        // sullo sfondo ogni costellazione si accende piano, a turno
+        const glow = interactive ? 0 : reduce ? .3 : Math.max(0, Math.sin(t * .00035 + ci * 1.7)) ** 4;
+
+        ctx.strokeStyle = interactive ? (on ? "rgba(175,198,255,.7)" : "rgba(140,165,235,.3)") : `rgba(165,188,245,${.04 + .16 * glow})`;
+        ctx.lineWidth = on ? 1.2 : .9;
+        ctx.beginPath();
+        for (const [a, b] of c.edges) {          // le linee si fermano poco prima delle stelle
+          const p = pts[a], q = pts[b]; if (!p || !q) continue;
+          const dx = q[0] - p[0], dy = q[1] - p[1], len = Math.hypot(dx, dy); if (len < 2) continue;
+          const g = Math.min(6, len / 3);
+          ctx.moveTo(p[0] + dx / len * g, p[1] + dy / len * g); ctx.lineTo(q[0] - dx / len * g, q[1] - dy / len * g);
+        }
+        ctx.stroke();
+
+        for (const s of c.stars) {
+          const p = pos.get(s); if (!p) continue;
+          const [x, y] = p, picked = sky.sel && sky.sel.s === s, hov = sky.hover && sky.hover.s === s;
+          const base = Math.max(1.1, Math.min(3.8, 3.4 - (s.m ?? 3) * .55));
+
+          if (!interactive) {                  // sfondo: solo punti luminosi, niente scritte
+            const rr = base * .85;
+            ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .2 + .5 * glow;
+            ctx.drawImage(tint([235, 232, 220]), x - rr * 6, y - rr * 6, rr * 12, rr * 12);
+            ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+            ctx.fillStyle = `rgba(252,248,238,${.5 + .45 * glow})`; ctx.beginPath(); ctx.arc(x, y, rr, 0, 6.283); ctx.fill();
+            continue;
+          }
+          if (!s.u) {
+            ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = on ? .5 : .32;
+            ctx.drawImage(tint([215, 225, 255]), x - base * 5, y - base * 5, base * 10, base * 10);
+            ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+            ctx.fillStyle = "rgba(235,240,255,.92)"; ctx.beginPath(); ctx.arc(x, y, base * .8, 0, 6.283); ctx.fill();
+            continue;
+          }
+          const rr = Math.max(2.4, base) + (picked || hov ? .8 : 0);
+          ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = picked || hov ? .9 : .55;
+          ctx.drawImage(tint([255, 234, 196]), x - rr * 7, y - rr * 7, rr * 14, rr * 14);
+          ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = "#fff7e6"; ctx.beginPath(); ctx.arc(x, y, rr, 0, 6.283); ctx.fill();
+          if (picked) { ctx.strokeStyle = "rgba(243,227,189,.9)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, y, 13, 0, 6.283); ctx.stroke(); }
+          ctx.font = `${picked || hov ? 600 : 400} 12px ${font}`; ctx.textAlign = "left";
+          ctx.fillStyle = picked || hov ? "rgba(255,255,255,.95)" : "rgba(214,222,245,.7)";
+          ctx.fillText(s.l, x + rr + 6, y - rr - 3);
+        }
+        if (interactive) {
+          const vis = pts.filter(Boolean);
+          const mx = vis.reduce((m, p) => m + p[0], 0) / vis.length, my = Math.max(...vis.map(p => p[1])) + 34;
+          ctx.font = `italic 400 ${on ? 17 : 16}px ${font}`; ctx.textAlign = "center";
+          ctx.fillStyle = on ? "rgba(190,210,255,.95)" : "rgba(150,175,235,.55)";
+          ctx.fillText(c.name, mx, my);
+        }
+      });
+
+      if (interactive) {
+        const hz = Array.from({ length: 181 }, (_, i) => proj(vec(sky.az - 180 + i * 2, 0))).filter(Boolean);
+        if (hz.length > 1) {
+          const gr = ctx.createLinearGradient(0, Math.min(...hz.map(p => p[1])), 0, H);
+          gr.addColorStop(0, "#0b1226"); gr.addColorStop(1, "#04060d");
+          ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(hz[0][0], H + 10);
+          for (const p of hz) ctx.lineTo(...p);
+          ctx.lineTo(hz[hz.length - 1][0], H + 10); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(150,175,235,.35)"; ctx.lineWidth = 1;
+          ctx.beginPath(); hz.forEach((p, i) => i ? ctx.lineTo(...p) : ctx.moveTo(...p)); ctx.stroke();
+        }
+        ctx.font = `600 13px ${font}`; ctx.textAlign = "center"; ctx.fillStyle = "rgba(200,212,245,.75)";
+        [["N", 0], ["E", 90], ["S", 180], ["W", 270]].forEach(([n, a]) => { const p = proj(vec(a, 0)); if (onScreen(p)) ctx.fillText(n, p[0], p[1] + 20); });
+      }
+    }
+    sky.draw = draw;
+
+    function loop(t) {
+      if (!sky.running) return;
+      const dt = Math.min(t - prev, 50); prev = t;
+      if (!drag && !sky.sel && t - lastTouch > 4000) sky.az += dt * (interactive ? .0012 : .0007);
+      draw(t);
+      requestAnimationFrame(loop);
+    }
+    sky.start = () => { if (sky.running) return; sky.running = true; prev = performance.now(); reduce ? draw(0) : requestAnimationFrame(loop); };
+    sky.stop = () => { sky.running = false; };
+
+    if (interactive) {
+      const local = e => { const b = canvas.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+      const hit = (x, y, coarse) => {
+        const rad = coarse ? 26 : 16;
+        for (const c of CONSTELLATIONS) for (const s of c.stars) {
+          const p = pos.get(s);
+          if (s.u && p && (p[0] - x) ** 2 + (p[1] - y) ** 2 < rad * rad) return { c, s };
+        }
+        return null;
+      };
+      sky.select = h => {
+        sky.sel = h;
+        if (!h) { card.hidden = true; hint.style.opacity = 1; }
+        else {
+          card.querySelector(".sky-meta").textContent = `${h.c.name}, ${h.s.k.toLowerCase()}`;
+          card.querySelector(".sky-title").textContent = h.s.t;
+          card.querySelector(".sky-go").href = h.s.u;
+          card.hidden = false; hint.style.opacity = 0;
+        }
+        if (reduce) draw(0);
+      };
+      canvas.addEventListener("pointerdown", e => {
+        const [x, y] = local(e);
+        drag = { x, y, az: sky.az, alt: sky.alt, moved: false, coarse: e.pointerType !== "mouse" };
+        canvas.setPointerCapture(e.pointerId); lastTouch = performance.now();
+      });
+      canvas.addEventListener("pointermove", e => {
+        const [x, y] = local(e);
+        if (drag) {
+          const dx = x - drag.x, dy = y - drag.y;
+          if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; canvas.classList.add("dragging"); }
+          if (drag.moved) {
+            sky.az = drag.az - dx / S / D;
+            sky.alt = Math.max(5, Math.min(70, drag.alt + dy / S / D));
+            lastTouch = performance.now();
+            if (reduce) draw(0);
+          }
+          return;
+        }
+        const h = hit(x, y, false);
+        if ((h && h.s) !== (sky.hover && sky.hover.s)) { sky.hover = h; canvas.style.cursor = h ? "pointer" : ""; if (reduce) draw(0); }
+      });
+      const end = e => {
+        if (!drag) return;
+        if (!drag.moved && e.type === "pointerup") { const [x, y] = local(e); sky.select(hit(x, y, drag.coarse)); }
+        drag = null; canvas.classList.remove("dragging"); lastTouch = performance.now();
+        if (reduce) draw(0);
+      };
+      canvas.addEventListener("pointerup", end);
+      canvas.addEventListener("pointercancel", end);
+    }
+    return sky;
+  }
+
+  const back = makeSky(bg.querySelector("canvas"), false);
+  const planetarium = makeSky(overlay.querySelector("canvas"), true);
+  let hostVisible = true;
+
+  function openSky() {
+    overlay.hidden = false; document.body.style.overflow = "hidden";
+    back.stop();
+    planetarium.az = back.az; planetarium.alt = 22;
+    planetarium.resize(); planetarium.start();
+    overlay.querySelector(".sky-close").focus();
+  }
+  function closeSky() {
+    planetarium.stop(); planetarium.select(null);
+    overlay.hidden = true; document.body.style.overflow = "";
+    back.az = planetarium.az;
+    if (hostVisible) back.start();
+    launch.focus();
+  }
+  launch.addEventListener("click", openSky);
+  overlay.querySelector(".sky-close").addEventListener("click", closeSky);
+  card.querySelector(".sky-x").addEventListener("click", () => planetarium.select(null));
+  addEventListener("keydown", e => {
+    if (e.key !== "Escape" || overlay.hidden) return;
+    planetarium.sel ? planetarium.select(null) : closeSky();
+  });
+
+  new IntersectionObserver(([en]) => {
+    hostVisible = en.isIntersecting;
+    if (!overlay.hidden) return;
+    hostVisible ? back.start() : back.stop();
+  }).observe(host);
+  new ResizeObserver(() => { back.resize(); back.draw(performance.now()); }).observe(host);
+  addEventListener("resize", () => { if (!overlay.hidden) { planetarium.resize(); planetarium.draw(performance.now()); } });
+
+  back.resize(); back.start();
+})();
+</script>
