@@ -16,6 +16,8 @@ tags:
 
 Guest lecture for the **Explainable Artificial Intelligence** course at the University of Trieste (November 13th, 2026).
 
+📄 [Download the slides (PDF)](slides.pdf)
+
 Topics covered: the Transformer architecture (self-attention, LayerNorm, MLPs as key-value memories), logit lens, tuned lens and J-Lens, input attribution (gradient-based, perturbation-based, contrastive), model component importance (ablation, activation patching, causal tracing), linear representations, steering and function vectors, probing, superposition, sparse autoencoders and transcoders, circuits (induction heads, IOI), attribution graphs, and validating interpretability claims.
 
 Below are the references for every part of the lecture, plus resources to keep learning.
